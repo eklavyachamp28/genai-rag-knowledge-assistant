@@ -1,0 +1,7 @@
+-r requirements.txt
+langchain-core>=0.3,<2
+langchain-huggingface>=0.1,<2
+langchain-chroma>=0.2,<2
+langgraph>=0.2,<2
+chromadb>=0.5,<2
+sentence-transformers>=3,<6
