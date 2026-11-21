@@ -48,4 +48,6 @@ rag = DenseRAG.from_texts(["RAG retrieves evidence before answering."], ["guide.
 print(rag.ask("What does RAG do?"))
 ```
 
-`rag_evaluation.py` implements **Recall@k**, **MRR@k**, and a clearly labeled lexical-overlap groundedness proxy. The proxy is *not* a validated LLM-as-judge or faithfulness metric. Benchmark results have not been established. Existing TF-IDF API remains the default lightweight baseline.
+`rag_evaluation.py` reports **Recall@k**, **MRR@k**, **Precision@k**, and **nDCG@k**. Pass ranked source IDs and labeled relevant source IDs to `evaluate_retrieval`. For example, `evaluate_retrieval([{"retrieved": ["guide.md", "faq.md"], "relevant": ["guide.md"]}], k=2)` returns recall, MRR, and nDCG of `1.0` and precision of `0.5`.
+
+`lexical_groundedness` is a separate lexical-overlap proxy. The proxy is *not* a validated LLM-as-judge or faithfulness metric. Benchmark results have not been established. Existing TF-IDF API remains the default lightweight baseline.
