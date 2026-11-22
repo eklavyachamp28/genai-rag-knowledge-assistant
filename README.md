@@ -25,11 +25,20 @@ API docs: http://127.0.0.1:8000/docs
 In another terminal: `streamlit run streamlit_app.py`
 
 ## API example
+
+Index a sample document, then ask a question about it:
+
 ```bash
-curl -X POST http://127.0.0.1:8000/ask -H "Content-Type: application/json" -d '{"question":"What is retrieval augmented generation?","top_k":3}'
+curl --fail-with-body -sS http://127.0.0.1:8000/ingest \
+  -H 'Content-Type: application/json' \
+  -d '{"documents":[{"name":"guide.txt","text":"Retrieval augmented generation retrieves relevant evidence before answering."}]}'
+
+curl --fail-with-body -sS http://127.0.0.1:8000/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"What is retrieval augmented generation?","top_k":3}'
 ```
 
-Ingest documents through POST /ingest with JSON shaped as {"documents":[{"name":"guide.txt","text":"..."}]}.
+The second response includes an answer and a citation to `guide.txt`. If the index is empty, `/ask` returns HTTP 400 until you ingest documents. The index lives in memory. After restarting, re-ingest uploaded documents or place text and Markdown files in `data/` so they are loaded at startup.
 
 ## Evaluation and extensions
 Evaluate Recall@k, MRR and answer faithfulness on a labelled question/context set before reporting benchmark results. The lexical TF-IDF retriever can be replaced with dense embeddings and an LLM generation adapter. Production use also requires authentication, document-level access controls, tenant isolation and monitoring.
