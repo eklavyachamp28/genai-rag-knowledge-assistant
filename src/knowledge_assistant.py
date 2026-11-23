@@ -1,6 +1,7 @@
 """Explainable lexical retrieval baseline with source citations."""
 from dataclasses import dataclass
 import numpy as np
+from sklearn.base import clone
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -40,8 +41,13 @@ class KnowledgeBase:
                 added.extend(chunk_text(str(doc["text"]), str(doc.get("name", "untitled")), chunk_size, overlap))
         if not added and not self.chunks:
             raise ValueError("No non-empty documents supplied")
-        self.chunks.extend(added)
-        self.matrix = self.vectorizer.fit_transform([c.text for c in self.chunks])
+        if not added:
+            return 0
+
+        chunks = self.chunks + added
+        vectorizer = clone(self.vectorizer)
+        matrix = vectorizer.fit_transform([chunk.text for chunk in chunks])
+        self.chunks, self.vectorizer, self.matrix = chunks, vectorizer, matrix
         return len(added)
 
     def search(self, question, top_k=3):
