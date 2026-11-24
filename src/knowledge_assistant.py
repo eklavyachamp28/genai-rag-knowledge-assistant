@@ -56,7 +56,9 @@ class KnowledgeBase:
         if not question.strip():
             raise ValueError("Question cannot be empty")
         scores = cosine_similarity(self.vectorizer.transform([question]), self.matrix).ravel()
-        order = np.argsort(scores)[::-1][:max(1, min(top_k, len(scores)))]
+        limit = max(1, min(top_k, len(scores)))
+        # Keep document order when similarity scores tie.
+        order = np.argsort(-scores, kind="stable")[:limit]
         return [{"source": self.chunks[i].source, "chunk": self.chunks[i].index,
                  "text": self.chunks[i].text, "score": float(scores[i])} for i in order]
 
