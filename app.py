@@ -21,8 +21,14 @@ class AskRequest(BaseModel):
 @app.on_event("startup")
 def load_documents():
     folder = Path(os.getenv("RAG_DOCS_DIR", "data"))
-    docs = [{"name": p.name, "text": p.read_text(encoding="utf-8", errors="ignore")}
-            for p in folder.glob("**/*") if p.is_file() and p.suffix.lower() in {".txt", ".md"}]
+    docs = [
+        {
+            "name": path.relative_to(folder).as_posix(),
+            "text": path.read_text(encoding="utf-8", errors="ignore"),
+        }
+        for path in sorted(folder.rglob("*"))
+        if path.is_file() and path.suffix.lower() in {".txt", ".md"}
+    ]
     if docs:
         kb.add_documents(docs)
 
