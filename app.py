@@ -1,10 +1,10 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
 import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from src.knowledge_assistant import KnowledgeBase
 
-app = FastAPI(title="GenAI RAG Knowledge Assistant", version="1.0.0")
 kb = KnowledgeBase()
 
 class Document(BaseModel):
@@ -18,8 +18,8 @@ class AskRequest(BaseModel):
     question: str
     top_k: int = Field(default=3, ge=1, le=10)
 
-@app.on_event("startup")
-def load_documents():
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
     folder = Path(os.getenv("RAG_DOCS_DIR", "data"))
     docs = [
         {
@@ -31,6 +31,9 @@ def load_documents():
     ]
     if docs:
         kb.add_documents(docs)
+    yield
+
+app = FastAPI(title="GenAI RAG Knowledge Assistant", version="1.0.0", lifespan=lifespan)
 
 @app.get("/health")
 def health():
