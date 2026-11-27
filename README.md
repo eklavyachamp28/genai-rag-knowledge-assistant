@@ -40,6 +40,8 @@ curl --fail-with-body -sS http://127.0.0.1:8000/ask \
 
 The second response includes an answer and a citation to `guide.txt`. If the index is empty, `/ask` returns HTTP 400 until you ingest documents. The index lives in memory. After restarting, re-ingest uploaded documents or place text and Markdown files in `data/` so they are loaded at startup.
 
+To load a different document directory at startup, run `RAG_DOCS_DIR=/path/to/documents uvicorn app:app`. The loader scans subdirectories for `.txt` and `.md` files. Citations use paths relative to the document directory, so files with the same name in different subdirectories remain distinct. Check `/health` after startup for the number of indexed chunks.
+
 ## Evaluation and extensions
 Evaluate Recall@k, MRR and answer faithfulness on a labelled question/context set before reporting benchmark results. The lexical TF-IDF retriever can be replaced with dense embeddings and an LLM generation adapter. Production use also requires authentication, document-level access controls, tenant isolation and monitoring.
 
