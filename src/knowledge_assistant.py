@@ -19,7 +19,7 @@ def chunk_text(text, source, chunk_size=900, overlap=120):
         end = min(len(text), start + chunk_size)
         if end < len(text):
             boundary = text.rfind(" ", start, end)
-            if boundary > start:
+            if boundary > start + overlap:
                 end = boundary
         piece = text[start:end].strip()
         if piece:
